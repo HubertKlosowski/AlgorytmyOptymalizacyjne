@@ -49,9 +49,40 @@ def optimistic_template():
     else:
         return render_template('optimistic.html')
 
-@app.route('/hurwicz')
+@app.route('/hurwicz', methods=['GET', 'POST'])
 def hurwicz_template():
-    return render_template('hurwicz.html')
+    if request.method == 'POST':
+        try:
+            gamma = float(request.form['gamma'])
+        except ValueError as e:
+            return render_template(
+                'hurwicz.html',
+                c_error='Problem parametrem gamma. Podaj wartość ponownie.'
+            )
+
+        data = request.files['file']
+        ext = data.filename.split('.')[-1]
+        if ext not in ALLOWED_EXTENSIONS:
+            return render_template(
+                'hurwicz.html',
+                c_error='Rozszerzenie pliku nie jest obsługiwane. Możliwe rozszerzenia: csv, txt, tsv, xlsx.'
+            )
+
+        if not ext == 'xlsx':
+            matrix = pd.read_csv(data.stream, header=None).to_numpy()
+        else:
+            matrix = pd.read_excel(data.stream, header=None).to_numpy()
+
+        try:
+            hurwicz_value = hurwicz(matrix, gamma)
+        except ValueError as e:
+            return render_template(
+                'hurwicz.html',
+                c_error=e
+            )
+        return render_template('hurwicz.html', decision=hurwicz_value, matrix=matrix)
+    else:
+        return render_template('hurwicz.html')
 
 @app.route('/savage')
 def savage_template():

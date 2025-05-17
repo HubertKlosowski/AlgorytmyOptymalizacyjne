@@ -6,9 +6,9 @@ def wald(matrix: np.array) -> int:
     return np.argmax(the_worst) + 1
 
 def optimistic(matrix: np.array) -> int:
-    return np.argmax(np.max(matrix, axis=1))
+    return np.argmax(np.max(matrix, axis=1)) + 1
 
-def hutrwicz(matrix: np.array, gamma: float) -> int:
+def hurwicz(matrix: np.array, gamma: float) -> int:
     if gamma < 0 or gamma > 1:
         raise ValueError('Parametr gamma musi być w przedziale [0; 1]')
 
