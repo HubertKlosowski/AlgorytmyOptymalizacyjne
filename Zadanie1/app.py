@@ -29,9 +29,25 @@ def wald_template():
     else:
         return render_template('wald.html')
 
-@app.route('/optimistic')
+@app.route('/optimistic', methods=['GET', 'POST'])
 def optimistic_template():
-    return render_template('optimistic.html')
+    if request.method == 'POST':
+        data = request.files['file']
+        ext = data.filename.split('.')[-1]
+        if ext not in ALLOWED_EXTENSIONS:
+            return render_template(
+                'optimistic.html',
+                c_error='Rozszerzenie pliku nie jest obsługiwane. Możliwe rozszerzenia: csv, txt, tsv, xlsx.'
+            )
+
+        if not ext == 'xlsx':
+            matrix = pd.read_csv(data.stream, header=None).to_numpy()
+        else:
+            matrix = pd.read_excel(data.stream, header=None).to_numpy()
+
+        return render_template('optimistic.html', decision=optimistic(matrix), matrix=matrix)
+    else:
+        return render_template('optimistic.html')
 
 @app.route('/hurwicz')
 def hurwicz_template():
