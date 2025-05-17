@@ -6,16 +6,17 @@
     <link rel="stylesheet" href="../static/style.css">
 </head>
 <body>
-    <div class="go_back">
-        <a href="{{ url_for('base') }}">Powrót</a>
-    </div>
     <div class="main_fun">
         <div class="form">
             {% block form %}{% endblock %}
         </div>
-        <div class="result">
-
+        <div class="final">
+            {% block data %}{% endblock %}
+            {% block result %}{% endblock %}
         </div>
+    </div>
+    <div class="go_back">
+        <a href="{{ url_for('base') }}">Powrót</a>
     </div>
 </body>
 </html>
