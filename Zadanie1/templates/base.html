@@ -3,11 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <title>Algorytmy optymalizacyjne - Zadanie 1</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../static/style.css">
 </head>
 <body>
     <div class="main">
-
+        <div class="criterions">
+            <a class="c" href="{{ url_for('wald_template') }}">
+                Kryterium Walda
+            </a>
+            <a class="c" href="{{ url_for('optimistic_template') }}">
+                Kryterium optymistyczne
+            </a>
+            <a class="c" href="{{ url_for('hurwicz_template') }}">
+                Kryterium Hurwicza
+            </a>
+            <a class="c" href="{{ url_for('bayes_laplace_template') }}">
+                Kryterium Bayesa-Laplace'a
+            </a>
+            <a class="c" href="{{ url_for('savage_template') }}">
+                Kryterium Savage'a
+            </a>
+        </div>
     </div>
 </body>
 </html>
