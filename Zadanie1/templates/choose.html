@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Wybór</title>
+    <link rel="stylesheet" href="../static/style.css">
+</head>
+<body>
+    <div class="choose">
+        <form method="post" action="/choose">
+            <h3>Wybierz sposób wprowadzenia danych:</h3>
+
+            <div class="option">
+                <input type="radio" id="send_file" name="choose" value="{{ source }} send_file" required>
+                <label for="send_file">Wyślij plik</label>
+            </div>
+
+            <div class="option">
+                <input type="radio" id="enter_manually" name="choose" value="{{ source }} enter_manually">
+                <label for="enter_manually">Wprowadź ręcznie</label>
+            </div>
+
+            <button type="submit">Zatwierdź wybór</button>
+        </form>
+    </div>
+</body>
+</html>

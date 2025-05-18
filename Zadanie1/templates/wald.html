@@ -1,13 +1,23 @@
 {% extends 'base_criterion.html' %}
 {% block title %}Kryterium Walda{% endblock %}
 {% block form %}
-    <form method="post" enctype="multipart/form-data">
-        <label for="file">
-            <b>Wskaż plik z macierzą użyteczności</b>
-        </label>
-        <input type="file" name="file">
-        <button type="submit">Wyślij</button>
-    </form>
+    {% if choose == 'send_file' %}
+        <form method="post" enctype="multipart/form-data">
+            <label for="file">
+                <b>Wskaż plik z macierzą użyteczności</b>
+            </label>
+            <input type="file" name="file">
+            <button type="submit">Wyślij</button>
+        </form>
+    {% else %}
+        <form method="post" enctype="multipart/form-data">
+            <label for="file">
+                <b>Wskaż plik z macierzą</b>
+            </label>
+            <input type="file" name="file">
+            <button type="submit">Wyślij</button>
+        </form>
+    {% endif %}
 {% endblock %}
 
 {% block data %}

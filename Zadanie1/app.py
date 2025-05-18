@@ -1,5 +1,5 @@
 import pandas as pd
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for, abort
 
 from criterions import *
 
@@ -9,6 +9,26 @@ ALLOWED_EXTENSIONS = {'txt', 'csv', 'tsv', 'xlsx'}
 @app.route('/')
 def base():
     return render_template('base.html')
+
+@app.route('/choose', methods=['GET', 'POST'])
+def choose_template():
+    if request.method == 'POST':
+        route, choose = request.form['choose'].split()
+        if route == 'wald':
+            return redirect(url_for('wald_template', choose=choose))
+        elif route == 'optimistic':
+            return redirect(url_for('optimistic_template', choose=choose))
+        elif route == 'hurwicz':
+            return redirect(url_for('hurwicz_template', choose=choose))
+        elif route == 'savage':
+            return redirect(url_for('savage_template', choose=choose))
+        elif route == 'bayes_laplace':
+            return redirect(url_for('bayes_laplace_template', choose=choose))
+        else:
+            return abort(404)
+    else:
+        source = request.args.get('source', 'unknown')
+        return render_template('choose.html', source=source)
 
 @app.route('/wald', methods=['GET', 'POST'])
 def wald_template():
@@ -35,7 +55,7 @@ def wald_template():
             )
         return render_template('wald.html', decision=wald_value, matrix=matrix)
     else:
-        return render_template('wald.html')
+        return render_template('wald.html', choose=request.args.get('choose'))
 
 @app.route('/optimistic', methods=['GET', 'POST'])
 def optimistic_template():

@@ -34,8 +34,8 @@ body {
     flex-direction: column;
     justify-content: space-evenly;
     align-items: center;
-    gap: 2rem;
-    padding: 2rem;
+    gap: 1rem;
+    padding: 1rem;
 }
 
 .form {
@@ -177,4 +177,53 @@ a {
 
 .element:last-child {
     border: none;
+}
+
+.choose {
+    background-color: #f9f9f9;
+    padding: 1.5rem;
+    border-radius: 12px;
+    width: 300px;
+    margin: 2rem auto;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    font-family: Arial, sans-serif;
+}
+
+.choose h3 {
+    text-align: center;
+    margin-bottom: 1rem;
+    color: #333;
+}
+
+.option {
+    display: flex;
+    align-items: center;
+    margin: 0.5rem 0;
+}
+
+.option input[type="radio"] {
+    margin-right: 0.5rem;
+}
+
+.choose label {
+    font-size: 1rem;
+    color: #222;
+    cursor: pointer;
+}
+
+.choose button {
+    margin-top: 1rem;
+    width: 100%;
+    padding: 0.6rem;
+    background-color: #007bff;
+    border: none;
+    color: white;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.choose button:hover {
+    background-color: #0056b3;
 }

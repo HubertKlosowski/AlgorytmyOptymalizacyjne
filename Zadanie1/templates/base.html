@@ -8,10 +8,10 @@
 <body>
     <div class="main">
         <div class="criterions">
-            <a class="c" href="{{ url_for('wald_template') }}">
+            <a class="c" href="{{ url_for('choose_template', source='wald') }}">
                 Kryterium Walda
             </a>
-            <a class="c" href="{{ url_for('optimistic_template') }}">
+            <a class="c" href="{{ url_for('choose_template', source='optimistic') }}">
                 Kryterium optymistyczne
             </a>
             <a class="c" href="{{ url_for('hurwicz_template') }}">
