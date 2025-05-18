@@ -50,6 +50,8 @@ body {
     width: 70%;
     height: 30%;
     display: flex;
+    justify-content: center;
+    align-items: center;
     background-color: white;
     padding: 1.5rem;
     border-radius: 12px;
@@ -57,7 +59,7 @@ body {
 }
 
 form {
-    width: 50%;
+    width: 90%;
     justify-items: center;
     align-items: center;
 }
