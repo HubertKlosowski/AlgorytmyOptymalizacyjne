@@ -57,7 +57,7 @@ def hurwicz_template():
         except ValueError as e:
             return render_template(
                 'hurwicz.html',
-                c_error='Problem parametrem gamma. Podaj wartość ponownie.'
+                c_error='Parametr gamma musi być typu numerycznego. Podaj wartość ponownie z przedziału [0; 1].'
             )
 
         data = request.files['file']
@@ -88,9 +88,37 @@ def hurwicz_template():
 def savage_template():
     return render_template('savage.html')
 
-@app.route('/bayes_laplace')
+@app.route('/bayes_laplace', methods=['GET', 'POST'])
 def bayes_laplace_template():
-    return render_template('bayes_laplace.html')
+    if request.method == 'POST':
+        proba_file, matrix_file = request.files['proba'], request.files['use_matrix']
+        ext_proba, ext_matrix = proba_file.filename.split('.')[-1], matrix_file.filename.split('.')[-1]
+        if ext_proba not in ALLOWED_EXTENSIONS or ext_matrix not in ALLOWED_EXTENSIONS:
+            return render_template(
+                'bayes_laplace.html',
+                c_error='Rozszerzenie pliku nie jest obsługiwane. Możliwe rozszerzenia: csv, txt, tsv, xlsx.'
+            )
+
+        if not ext_proba == 'xlsx':
+            proba = pd.read_csv(proba_file.stream, header=None).to_numpy().reshape(-1)
+        else:
+            proba = pd.read_excel(proba_file.stream, header=None).to_numpy().reshape(-1)
+
+        if not ext_matrix == 'xlsx':
+            matrix = pd.read_csv(matrix_file.stream, header=None).to_numpy()
+        else:
+            matrix = pd.read_excel(matrix_file.stream, header=None).to_numpy()
+
+        try:
+            bayes_laplace_value = bayes_laplace(matrix, proba)
+        except ValueError as e:
+            return render_template(
+                'bayes_laplace.html',
+                c_error=e
+            )
+        return render_template('bayes_laplace.html', decision=bayes_laplace_value, matrix=matrix, proba=proba)
+    else:
+        return render_template('bayes_laplace.html')
 
 
 if __name__ == '__main__':

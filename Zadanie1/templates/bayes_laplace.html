@@ -1,5 +1,40 @@
 {% extends 'base_criterion.html' %}
 {% block title %}Kryterium Bayesa-Laplace'a{% endblock %}
 {% block form %}
-    
+    <form method="post" enctype="multipart/form-data">
+        <label for="use_matrix">
+            <b>Wskaż plik z macierzą użyteczności</b>
+        </label>
+        <input type="file" name="use_matrix">
+        <label for="proba">
+            <b>Wskaż plik z listą prawdopodobieństw stanów natury</b>
+        </label>
+        <input type="file" name="proba">
+        <button type="submit">Wyślij</button>
+    </form>
+{% endblock %}
+
+{% block data %}
+    {% if decision %}
+        <div class="data">
+            <h3>Dane</h3>
+            {% for i in range(matrix.shape[0]) %}
+                <div class="row">
+                    {% for j in range(matrix.shape[1]) %}
+                        <div class="element">{{ matrix[i][j] }}</div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endblock %}
+
+{% block result %}
+    {% if c_error %}
+        {{ c_error }}
+    {% elif decision %}
+        <div class="result">
+            Najlepsza decyzja to: {{ decision }}
+        </div>
+    {% endif %}
 {% endblock %}
