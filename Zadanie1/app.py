@@ -25,7 +25,14 @@ def wald_template():
         else:
             matrix = pd.read_excel(data.stream, header=None).to_numpy()
 
-        return render_template('wald.html', decision=wald(matrix), matrix=matrix)
+        try:
+            wald_value = wald(matrix)
+        except TypeError:
+            return render_template(
+                'wald.html',
+                c_error='Wartości macierzy użyteczności muszą być liczbami.'
+            )
+        return render_template('wald.html', decision=wald_value, matrix=matrix)
     else:
         return render_template('wald.html')
 
@@ -45,7 +52,14 @@ def optimistic_template():
         else:
             matrix = pd.read_excel(data.stream, header=None).to_numpy()
 
-        return render_template('optimistic.html', decision=optimistic(matrix), matrix=matrix)
+        try:
+            optimistic_value = optimistic(matrix)
+        except TypeError:
+            return render_template(
+                'wald.html',
+                c_error='Wartości macierzy użyteczności muszą być liczbami.'
+            )
+        return render_template('optimistic.html', decision=optimistic_value, matrix=matrix)
     else:
         return render_template('optimistic.html')
 
@@ -54,7 +68,7 @@ def hurwicz_template():
     if request.method == 'POST':
         try:
             gamma = float(request.form['gamma'])
-        except ValueError as e:
+        except ValueError:
             return render_template(
                 'hurwicz.html',
                 c_error='Parametr gamma musi być typu numerycznego. Podaj wartość ponownie z przedziału [0; 1].'
@@ -75,7 +89,7 @@ def hurwicz_template():
 
         try:
             hurwicz_value = hurwicz(matrix, gamma)
-        except ValueError as e:
+        except Exception as e:
             return render_template(
                 'hurwicz.html',
                 c_error=e
@@ -84,9 +98,32 @@ def hurwicz_template():
     else:
         return render_template('hurwicz.html')
 
-@app.route('/savage')
+@app.route('/savage', methods=['GET', 'POST'])
 def savage_template():
-    return render_template('savage.html')
+    if request.method == 'POST':
+        matrix_file = request.files['file']
+        ext_matrix = matrix_file.filename.split('.')[-1]
+        if ext_matrix not in ALLOWED_EXTENSIONS:
+            return render_template(
+                'savage.html',
+                c_error='Rozszerzenie pliku nie jest obsługiwane. Możliwe rozszerzenia: csv, txt, tsv, xlsx.'
+            )
+
+        if not ext_matrix == 'xlsx':
+            matrix = pd.read_csv(matrix_file.stream, header=None).to_numpy()
+        else:
+            matrix = pd.read_excel(matrix_file.stream, header=None).to_numpy()
+
+        try:
+            savage_value = savage(matrix)
+        except Exception as e:
+            return render_template(
+                'savage.html',
+                c_error=e
+            )
+        return render_template('savage.html', decision=savage_value, matrix=matrix)
+    else:
+        return render_template('savage.html')
 
 @app.route('/bayes_laplace', methods=['GET', 'POST'])
 def bayes_laplace_template():
@@ -111,7 +148,7 @@ def bayes_laplace_template():
 
         try:
             bayes_laplace_value = bayes_laplace(matrix, proba)
-        except ValueError as e:
+        except Exception as e:
             return render_template(
                 'bayes_laplace.html',
                 c_error=e
