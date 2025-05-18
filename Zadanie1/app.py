@@ -33,7 +33,7 @@ def choose_template():
         if route == 'wald':
             return redirect(url_for('wald_template', choose=choose, rows=rows, columns=columns))
         elif route == 'optimistic':
-            return redirect(url_for('optimistic_template', choose=choose))
+            return redirect(url_for('optimistic_template', choose=choose, rows=rows, columns=columns))
         elif route == 'hurwicz':
             return redirect(url_for('hurwicz_template', choose=choose))
         elif route == 'savage':
@@ -86,19 +86,30 @@ def wald_template():
 
 @app.route('/optimistic', methods=['GET', 'POST'])
 def optimistic_template():
+    choose, rows, columns = request.args.get('choose'), int(request.args.get('rows')), int(request.args.get('columns'))
     if request.method == 'POST':
-        data = request.files['file']
-        ext = data.filename.split('.')[-1]
-        if ext not in ALLOWED_EXTENSIONS:
-            return render_template(
-                'optimistic.html',
-                c_error='Rozszerzenie pliku nie jest obsługiwane. Możliwe rozszerzenia: csv, txt, tsv, xlsx.'
-            )
+        if choose == 'send_file':
+            data = request.files['file']
+            ext = data.filename.split('.')[-1]
+            if ext not in ALLOWED_EXTENSIONS:
+                return render_template(
+                    'optimistic.html',
+                    c_error='Rozszerzenie pliku nie jest obsługiwane. Możliwe rozszerzenia: csv, txt, tsv, xlsx.'
+                )
 
-        if not ext == 'xlsx':
-            matrix = pd.read_csv(data.stream, header=None).to_numpy()
+            if not ext == 'xlsx':
+                matrix = pd.read_csv(data.stream, header=None).to_numpy()
+            else:
+                matrix = pd.read_excel(data.stream, header=None).to_numpy()
         else:
-            matrix = pd.read_excel(data.stream, header=None).to_numpy()
+            matrix = []
+            for i in range(rows):
+                row = []
+                for j in range(columns):
+                    value = float(request.form.get(f"matrix_{i}_{j}", 0))
+                    row.append(value)
+                matrix.append(row)
+            matrix = np.array(matrix)
 
         try:
             optimistic_value = optimistic(matrix)
@@ -107,9 +118,9 @@ def optimistic_template():
                 'optimistic.html',
                 c_error='Wartości macierzy użyteczności muszą być liczbami.'
             )
-        return render_template('optimistic.html', choose=request.args.get('choose'), decision=optimistic_value, matrix=matrix)
+        return render_template('optimistic.html', choose=choose, rows=rows, columns=columns, decision=optimistic_value, matrix=matrix)
     else:
-        return render_template('optimistic.html', choose=request.args.get('choose'))
+        return render_template('optimistic.html', choose=choose, rows=rows, columns=columns)
 
 @app.route('/hurwicz', methods=['GET', 'POST'])
 def hurwicz_template():
