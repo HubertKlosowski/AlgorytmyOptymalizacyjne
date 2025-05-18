@@ -10,10 +10,12 @@
         <div class="form">
             {% block form %}{% endblock %}
         </div>
-        <div class="final">
-            {% block data %}{% endblock %}
-            {% block result %}{% endblock %}
-        </div>
+        {% if decision %}
+            <div class="final">
+                {% block data %}{% endblock %}
+                {% block result %}{% endblock %}
+            </div>
+        {% endif %}
     </div>
     <div class="go_back">
         <a href="{{ url_for('base') }}">Powrót</a>

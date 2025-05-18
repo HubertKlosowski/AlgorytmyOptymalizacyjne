@@ -1,11 +1,17 @@
 body {
-    margin: 0;
+    margin: 0 auto;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: #f4f6f8;
     color: #333;
+    display: flex;
+    flex-direction: column;
+    justify-content: left;
+    align-items: center;
+    overflow-x: hidden;
 }
 
 .go_back {
+    height: 20%;
     padding: 1rem 2rem;
     background-color: #2c3e50;
     color: white;
@@ -22,6 +28,8 @@ body {
 }
 
 .main_fun {
+    width: 100%;
+    height: 80%;
     display: flex;
     flex-direction: column;
     justify-content: space-evenly;
@@ -30,11 +38,18 @@ body {
     padding: 2rem;
 }
 
+.form {
+    flex-direction: row;
+}
+
+.final {
+    flex-direction: column;
+}
+
 .form, .final {
     width: 70%;
-    height: 50%;
+    height: 30%;
     display: flex;
-    flex-direction: column;
     background-color: white;
     padding: 1.5rem;
     border-radius: 12px;
@@ -42,6 +57,7 @@ body {
 }
 
 form {
+    width: 50%;
     justify-items: center;
     align-items: center;
 }

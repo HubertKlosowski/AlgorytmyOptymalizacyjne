@@ -1,5 +1,6 @@
 import pandas as pd
-from flask import Flask, render_template, request, abort
+from flask import Flask, render_template, request
+
 from criterions import *
 
 app = Flask(__name__)
