@@ -20,8 +20,23 @@
                 <label for="enter_manually">Wprowadź ręcznie</label>
             </div>
 
+            <div class="option" id="last" style="visibility: collapse">
+                <input type="number" name="rows" id="rows" placeholder="Liczba wierszy">
+                <input type="number" name="columns" id="columns" placeholder="Liczba kolumn">
+            </div>
+
             <button type="submit">Zatwierdź wybór</button>
         </form>
     </div>
+    {% if c_error %}
+        {{ c_error }}
+    {% endif %}
+    <script type="application/javascript">
+        addEventListener('change', event => {
+            let radio_value = document.getElementById('enter_manually').checked
+            let rows_columns = document.getElementById('last')
+            rows_columns.style.visibility = radio_value === true ? 'visible' : 'collapse'
+        })
+    </script>
 </body>
 </html>

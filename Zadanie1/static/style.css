@@ -197,18 +197,31 @@ a {
 
 .option {
     display: flex;
+    flex-direction: row;
+    justify-content: center;
     align-items: center;
+    width: 100%;
+    min-height: 20%;
     margin: 0.5rem 0;
+}
+
+#last {
+    justify-content: space-evenly;
+    flex-direction: column;
 }
 
 .option input[type="radio"] {
     margin-right: 0.5rem;
 }
 
-.choose label {
+.option input[type="number"] {
+    width: 70%;
+    height: 2rem;
+    margin-bottom: 1rem;
+    padding: 0.5rem;
     font-size: 1rem;
-    color: #222;
-    cursor: pointer;
+    border: 1px solid #ccc;
+    border-radius: 8px;
 }
 
 .choose button {
@@ -227,3 +240,4 @@ a {
 .choose button:hover {
     background-color: #0056b3;
 }
+
