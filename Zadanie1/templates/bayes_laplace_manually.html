@@ -17,7 +17,7 @@
         </label>
         <div class="row" style="border: none; margin: 1rem">
             {% for i in range(columns) %}
-                <input type="number" name="proba_{{ i }}" required placeholder="{{ i }}">
+                <input type="text" name="proba_{{ i }}" required placeholder="{{ i }}">
             {% endfor %}
         </div>
         <button type="submit">Wyślij</button>
@@ -39,6 +39,12 @@
                     {% endfor %}
                 </div>
             {% endfor %}
+            <h3>Prawdopodobieństwa</h3>
+            <div class="row">
+                {% for i in range(proba.shape[0]) %}
+                    <div class="element">{{ proba[i] }}</div>
+                {% endfor %}
+            </div>
         </div>
     {% endif %}
 {% endblock %}
