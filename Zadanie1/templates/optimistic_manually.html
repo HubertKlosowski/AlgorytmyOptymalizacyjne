@@ -1,0 +1,43 @@
+{% extends 'base_criterion.html' %}
+{% block title %}Kryterium optymistyczne{% endblock %}
+{% block form %}
+    <form method="post">
+        {% for i in range(rows) %}
+            <div class="row" style="border: none; margin: 1rem">
+                {% for j in range(columns) %}
+                    <input type="number" name="matrix_{{ i }}_{{ j }}" required placeholder="{{ i }},{{ j }}">
+                {% endfor %}
+            </div>
+        {% endfor %}
+        <button type="submit">Wyślij</button>
+    </form>
+{% endblock %}
+
+{% block data %}
+    {% if decision %}
+        <div class="data">
+            <h3>Dane</h3>
+            {% for i in range(matrix.shape[0]) %}
+                <div class="row">
+                    {% for j in range(matrix.shape[1] + 1) %}
+                        {% if j == 0 %}
+                            <div class="element">Wiersz nr {{ i + 1 }}</div>
+                        {% else %}
+                            <div class="element">{{ matrix[i][j - 1] }}</div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endblock %}
+
+{% block result %}
+    {% if c_error %}
+        {{ c_error }}
+    {% elif decision %}
+        <div class="result">
+            Najlepsza decyzja to wiersz nr {{ decision }}.
+        </div>
+    {% endif %}
+{% endblock %}
