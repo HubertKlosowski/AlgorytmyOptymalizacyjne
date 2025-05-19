@@ -8,7 +8,7 @@
         {% for i in range(rows) %}
             <div class="row" style="border: none; margin: 1rem">
                 {% for j in range(columns) %}
-                    <input type="number" name="matrix_{{ i }}_{{ j }}" required placeholder="{{ i }};{{ j }}">
+                    <input type="text" name="matrix_{{ i }}_{{ j }}" required placeholder="{{ i }};{{ j }}">
                 {% endfor %}
             </div>
         {% endfor %}
