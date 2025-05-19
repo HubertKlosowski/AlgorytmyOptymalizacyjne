@@ -2,10 +2,13 @@
 {% block title %}Kryterium Walda{% endblock %}
 {% block form %}
     <form method="post">
+        <label for="matrix_0_0">
+            <b>Wskaż wartości macierzy użyteczności</b>
+        </label>
         {% for i in range(rows) %}
             <div class="row" style="border: none; margin: 1rem">
                 {% for j in range(columns) %}
-                    <input type="number" name="matrix_{{ i }}_{{ j }}" required placeholder="{{ i }},{{ j }}">
+                    <input type="number" name="matrix_{{ i }}_{{ j }}" required placeholder="{{ i }};{{ j }}">
                 {% endfor %}
             </div>
         {% endfor %}

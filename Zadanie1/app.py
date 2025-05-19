@@ -19,7 +19,6 @@ def choose_template():
             try:
                 rows, columns = int(request.form['rows']), int(request.form['columns'])
             except ValueError:
-                # return redirect(url_for('base_template'))
                 return render_template(
                     'choose.html',
                     c_error='Liczba wierszy i kolumn musi być liczbą całkowitą większą od 0.'
@@ -31,23 +30,9 @@ def choose_template():
                     c_error='Liczba wierszy i kolumn musi być liczbą całkowitą większą od 0.'
                 )
 
-        if route == 'wald' and choose == 'enter_manually':
-            return redirect(url_for('wald_template_manually', choose=choose, rows=rows, columns=columns))
-        elif route == 'wald' and choose == 'send_file':
-            return redirect(url_for('wald_template_file', choose=choose))
-        elif route == 'optimistic' and choose == 'enter_manually':
-            return redirect(url_for('optimistic_template_manually', choose=choose, rows=rows, columns=columns))
-        elif route == 'optimistic' and choose == 'send_file':
-            return redirect(url_for('optimistic_template_file', choose=choose))
-        elif route == 'hurwicz' and choose == 'enter_manually':
-            return redirect(url_for('hurwicz_template_manually', choose=choose, rows=rows, columns=columns))
-        elif route == 'hurwicz' and choose == 'send_file':
-            return redirect(url_for('hurwicz_template_file', choose=choose))
-
-        elif route == 'savage':
-            return redirect(url_for('savage_template', choose=choose))
-        elif route == 'bayes_laplace':
-            return redirect(url_for('bayes_laplace_template', choose=choose))
+            return redirect(url_for(f'{route}_template_manually', rows=rows, columns=columns))
+        elif choose == 'send_file':
+            return redirect(url_for(f'{route}_template_manually'))
         else:
             return abort(404)
     else:
@@ -91,11 +76,7 @@ def wald_template_manually():
     if request.method == 'POST':
         matrix = []
         for i in range(rows):
-            row = []
-            for j in range(columns):
-                value = float(request.form.get(f'matrix_{i}_{j}', 0))
-                row.append(value)
-            matrix.append(row)
+            matrix.append([float(request.form.get(f'matrix_{i}_{j}', 0)) for j in range(columns)])
         matrix = np.array(matrix)
 
         try:
@@ -156,11 +137,7 @@ def optimistic_template_manually():
     if request.method == 'POST':
         matrix = []
         for i in range(rows):
-            row = []
-            for j in range(columns):
-                value = float(request.form.get(f'matrix_{i}_{j}', 0))
-                row.append(value)
-            matrix.append(row)
+            matrix.append([float(request.form.get(f'matrix_{i}_{j}', 0)) for j in range(columns)])
         matrix = np.array(matrix)
 
         try:
@@ -237,11 +214,7 @@ def hurwicz_template_manually():
 
         matrix = []
         for i in range(rows):
-            row = []
-            for j in range(columns):
-                value = float(request.form.get(f'matrix_{i}_{j}', 0))
-                row.append(value)
-            matrix.append(row)
+            matrix.append([float(request.form.get(f'matrix_{i}_{j}', 0)) for j in range(columns)])
         matrix = np.array(matrix)
 
         try:
@@ -298,11 +271,7 @@ def savage_template_manually():
     if request.method == 'POST':
         matrix = []
         for i in range(rows):
-            row = []
-            for j in range(columns):
-                value = float(request.form.get(f'matrix_{i}_{j}', 0))
-                row.append(value)
-            matrix.append(row)
+            matrix.append([float(request.form.get(f'matrix_{i}_{j}', 0)) for j in range(columns)])
         matrix = np.array(matrix)
 
         try:
@@ -326,14 +295,14 @@ def savage_template_manually():
             columns=columns
         )
 
-@app.route('/bayes_laplace', methods=['GET', 'POST'])
-def bayes_laplace_template():
+@app.route('/bayes_laplace_file', methods=['GET', 'POST'])
+def bayes_laplace_template_file():
     if request.method == 'POST':
         proba_file, matrix_file = request.files['proba'], request.files['use_matrix']
         ext_proba, ext_matrix = proba_file.filename.split('.')[-1], matrix_file.filename.split('.')[-1]
         if ext_proba not in ALLOWED_EXTENSIONS or ext_matrix not in ALLOWED_EXTENSIONS:
             return render_template(
-                'bayes_laplace.html',
+                'bayes_laplace_file.html',
                 c_error='Rozszerzenie pliku nie jest obsługiwane. Możliwe rozszerzenia: csv, txt, tsv, xlsx.'
             )
 
@@ -351,12 +320,44 @@ def bayes_laplace_template():
             bayes_laplace_value = bayes_laplace(matrix, proba)
         except Exception as e:
             return render_template(
-                'bayes_laplace.html',
+                'bayes_laplace_file.html',
                 c_error=e
             )
-        return render_template('bayes_laplace.html', decision=bayes_laplace_value, matrix=matrix, proba=proba)
+        return render_template('bayes_laplace_file.html', decision=bayes_laplace_value, matrix=matrix, proba=proba)
     else:
-        return render_template('bayes_laplace.html')
+        return render_template('bayes_laplace_file.html')
+
+@app.route('/bayes_laplace_manually', methods=['GET', 'POST'])
+def bayes_laplace_template_manually():
+    rows, columns = int(request.args.get('rows')), int(request.args.get('columns'))
+    if request.method == 'POST':
+        matrix = []
+        for i in range(rows):
+            matrix.append([float(request.form.get(f'matrix_{i}_{j}', 0)) for j in range(columns)])
+        matrix = np.array(matrix)
+        proba = np.array([float(request.form.get(f'proba_{i}', 0)) for i in range(columns)])
+
+        try:
+            bayes_laplace_value = bayes_laplace(matrix, proba)
+        except Exception as e:
+            return render_template(
+                'bayes_laplace_manually.html',
+                c_error=e
+            )
+        return render_template(
+            'bayes_laplace_manually.html',
+            rows=rows,
+            columns=columns,
+            decision=bayes_laplace_value,
+            matrix=matrix,
+            proba=proba
+        )
+    else:
+        return render_template(
+            'bayes_laplace_manually.html',
+            rows=rows,
+            columns=columns
+        )
 
 
 if __name__ == '__main__':

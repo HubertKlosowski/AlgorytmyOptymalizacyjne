@@ -1,11 +1,25 @@
 {% extends 'base_criterion.html' %}
-{% block title %}Kryterium Walda{% endblock %}
+{% block title %}Kryterium Bayesa-Laplace'a{% endblock %}
 {% block form %}
-    <form method="post" enctype="multipart/form-data">
-        <label for="file">
-            <b>Wskaż plik z macierzą użyteczności</b>
+    <form method="post">
+        <label for="matrix_0_0">
+            <b>Wskaż wartości macierzy użyteczności</b>
         </label>
-        <input type="file" name="file">
+        {% for i in range(rows) %}
+            <div class="row" style="border: none; margin: 1rem">
+                {% for j in range(columns) %}
+                    <input type="number" name="matrix_{{ i }}_{{ j }}" required placeholder="{{ i }};{{ j }}">
+                {% endfor %}
+            </div>
+        {% endfor %}
+        <label for="proba_0">
+            <b>Wskaż wartości prawdopodobieństw stanów natury</b>
+        </label>
+        <div class="row" style="border: none; margin: 1rem">
+            {% for i in range(columns) %}
+                <input type="number" name="proba_{{ i }}" required placeholder="{{ i }}">
+            {% endfor %}
+        </div>
         <button type="submit">Wyślij</button>
     </form>
 {% endblock %}
