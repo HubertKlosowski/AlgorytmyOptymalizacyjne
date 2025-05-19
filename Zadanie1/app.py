@@ -13,7 +13,10 @@ def base_template():
 @app.route('/choose', methods=['GET', 'POST'])
 def choose_template():
     if request.method == 'POST':
-        route, choose = request.form['choose'].split()
+        if request.args.get('source') is not None:
+            source, choose = request.args.get('source'), request.args.get('choose')
+        else:
+            source, choose = request.form['choose'].split()
 
         if choose == 'enter_manually':
             try:
@@ -21,23 +24,29 @@ def choose_template():
             except ValueError:
                 return render_template(
                     'choose.html',
-                    c_error='Liczba wierszy i kolumn musi być liczbą całkowitą większą od 0.'
+                    c_error='Liczba wierszy i kolumn musi być liczbą całkowitą większą od 0.',
+                    source=source,
+                    choose=choose
                 )
 
             if rows <= 0 or columns <= 0:
                 return render_template(
                     'choose.html',
-                    c_error='Liczba wierszy i kolumn musi być liczbą całkowitą większą od 0.'
+                    c_error='Liczba wierszy i kolumn musi być liczbą całkowitą większą od 0.',
+                    source=source,
+                    choose=choose
                 )
 
-            return redirect(url_for(f'{route}_template_manually', rows=rows, columns=columns))
+            return redirect(url_for(f'{source}_template_manually', rows=rows, columns=columns))
         elif choose == 'send_file':
-            return redirect(url_for(f'{route}_template_manually'))
+            return redirect(url_for(f'{source}_template_manually'))
         else:
             return abort(404)
     else:
-        source = request.args.get('source', 'unknown')
-        return render_template('choose.html', source=source)
+        return render_template(
+            'choose.html',
+            source=request.args.get('source', 'unknown')
+        )
 
 @app.route('/wald_file', methods=['GET', 'POST'])
 def wald_template_file():
