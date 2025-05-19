@@ -23,7 +23,7 @@ def bayes_laplace(matrix: np.array, proba: np.array) -> int:
         raise Exception('Każda kolumna w macierzy musi mieć przyporządkowane prawdopodobieństwo!')
 
     if not all(isinstance(el, (int, float, np.number)) for el in proba):
-        raise TypeError('Prawdopodobieństwa muszą być typu numerycznego!')
+        raise Exception('Prawdopodobieństwa muszą być typu numerycznego!')
 
     g_sum = np.sum(proba)
     if not np.isclose(g_sum, 1.0):

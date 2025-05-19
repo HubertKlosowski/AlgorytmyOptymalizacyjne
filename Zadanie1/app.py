@@ -60,7 +60,7 @@ def wald_template_file():
             )
 
         if not ext == 'xlsx':
-            matrix = pd.read_csv(data.stream, header=None, sep=None).to_numpy()
+            matrix = pd.read_csv(data.stream, header=None, sep=None, engine='python').to_numpy()
         else:
             matrix = pd.read_excel(data.stream, header=None).to_numpy()
 
@@ -121,7 +121,7 @@ def optimistic_template_file():
             )
 
         if not ext == 'xlsx':
-            matrix = pd.read_csv(data.stream, header=None, sep=None).to_numpy()
+            matrix = pd.read_csv(data.stream, header=None, sep=None, engine='python').to_numpy()
         else:
             matrix = pd.read_excel(data.stream, header=None).to_numpy()
 
@@ -190,7 +190,7 @@ def hurwicz_template_file():
             )
 
         if not ext == 'xlsx':
-            matrix = pd.read_csv(data.stream, header=None, sep=None).to_numpy()
+            matrix = pd.read_csv(data.stream, header=None, sep=None, engine='python').to_numpy()
         else:
             matrix = pd.read_excel(data.stream, header=None).to_numpy()
 
@@ -259,7 +259,7 @@ def savage_template_file():
             )
 
         if not ext_matrix == 'xlsx':
-            matrix = pd.read_csv(matrix_file.stream, header=None, sep=None).to_numpy()
+            matrix = pd.read_csv(matrix_file.stream, header=None, sep=None, engine='python').to_numpy()
         else:
             matrix = pd.read_excel(matrix_file.stream, header=None).to_numpy()
 
@@ -316,12 +316,12 @@ def bayes_laplace_template_file():
             )
 
         if not ext_proba == 'xlsx':
-            proba = pd.read_csv(proba_file.stream, header=None, sep=None).to_numpy().reshape(-1)
+            proba = pd.read_csv(proba_file.stream, header=None, sep=None, engine='python').to_numpy().reshape(-1)
         else:
             proba = pd.read_excel(proba_file.stream, header=None).to_numpy().reshape(-1)
 
         if not ext_matrix == 'xlsx':
-            matrix = pd.read_csv(matrix_file.stream, header=None, sep=None).to_numpy()
+            matrix = pd.read_csv(matrix_file.stream, header=None, sep=None, engine='python').to_numpy()
         else:
             matrix = pd.read_excel(matrix_file.stream, header=None).to_numpy()
 
