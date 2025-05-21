@@ -71,6 +71,7 @@ def wald_template_file():
                 'wald_file.html',
                 c_error='Wartości macierzy użyteczności muszą być liczbami.'
             )
+
         return render_template(
             'wald_file.html',
             decision=wald_value,

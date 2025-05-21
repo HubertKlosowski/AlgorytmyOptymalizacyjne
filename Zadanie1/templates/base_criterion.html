@@ -10,7 +10,7 @@
         <div class="form">
             {% block form %}{% endblock %}
         </div>
-        {% if decision %}
+        {% if decision or c_error %}
             <div class="final">
                 {% block data %}{% endblock %}
                 {% block result %}{% endblock %}
