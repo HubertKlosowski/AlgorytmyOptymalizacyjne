@@ -2,8 +2,7 @@ import numpy as np
 
 
 def wald(matrix: np.array) -> int:
-    the_worst = np.min(matrix, axis=1)
-    return np.argmax(the_worst) + 1
+    return np.argmax(np.min(matrix, axis=1)) + 1
 
 def optimistic(matrix: np.array) -> int:
     return np.argmax(np.max(matrix, axis=1)) + 1
@@ -26,6 +25,7 @@ def bayes_laplace(matrix: np.array, proba: np.array) -> int:
         raise Exception('Prawdopodobieństwa muszą być typu numerycznego!')
 
     g_sum = np.sum(proba)
+    print(g_sum)
     if not np.isclose(g_sum, 1.0):
         raise Exception(f'Suma prawdopodobieństw musi być równe jedności. 1 != {g_sum}')
 

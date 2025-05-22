@@ -21,7 +21,7 @@ def choose_template():
         if choose == 'enter_manually':
             try:
                 rows, columns = int(request.form['rows']), int(request.form['columns'])
-            except ValueError:
+            except Exception:
                 return render_template(
                     'choose.html',
                     c_error='Liczba wierszy i kolumn musi być liczbą całkowitą większą od 0.',
@@ -66,7 +66,7 @@ def wald_template_file():
 
         try:
             wald_value = wald(matrix)
-        except TypeError:
+        except Exception:
             return render_template(
                 'wald_file.html',
                 c_error='Wartości macierzy użyteczności muszą być liczbami.'
@@ -86,15 +86,25 @@ def wald_template_manually():
     if request.method == 'POST':
         matrix = []
         for i in range(rows):
-            matrix.append([float(request.form.get(f'matrix_{i}_{j}', 0)) for j in range(columns)])
+            try:
+                matrix.append([float(request.form.get(f'matrix_{i}_{j}', 0)) for j in range(columns)])
+            except Exception:
+                return render_template(
+                    'wald_manually.html',
+                    c_error='Błędne wartości macierzy użyteczności.',
+                    rows=rows,
+                    columns=columns,
+                )
         matrix = np.array(matrix)
 
         try:
             wald_value = wald(matrix)
-        except TypeError:
+        except Exception:
             return render_template(
                 'wald_manually.html',
-                c_error='Wartości macierzy użyteczności muszą być liczbami.'
+                c_error='Wartości macierzy użyteczności muszą być liczbami.',
+                rows=rows,
+                columns=columns,
             )
         return render_template(
             'wald_manually.html',
@@ -128,7 +138,7 @@ def optimistic_template_file():
 
         try:
             optimistic_value = optimistic(matrix)
-        except TypeError:
+        except Exception:
             return render_template(
                 'optimistic_file.html',
                 c_error='Wartości macierzy użyteczności muszą być liczbami.'
@@ -147,15 +157,25 @@ def optimistic_template_manually():
     if request.method == 'POST':
         matrix = []
         for i in range(rows):
-            matrix.append([float(request.form.get(f'matrix_{i}_{j}', 0)) for j in range(columns)])
+            try:
+                matrix.append([float(request.form.get(f'matrix_{i}_{j}', 0)) for j in range(columns)])
+            except Exception:
+                return render_template(
+                    'wald_manually.html',
+                    c_error='Błędne wartości macierzy użyteczności.',
+                    rows=rows,
+                    columns=columns,
+                )
         matrix = np.array(matrix)
 
         try:
             optimistic_value = optimistic(matrix)
-        except TypeError:
+        except Exception:
             return render_template(
                 'optimistic_manually.html',
-                c_error='Wartości macierzy użyteczności muszą być liczbami.'
+                c_error='Wartości macierzy użyteczności muszą być liczbami.',
+                rows=rows,
+                columns=columns,
             )
         return render_template(
             'optimistic_manually.html',
@@ -176,7 +196,7 @@ def hurwicz_template_file():
     if request.method == 'POST':
         try:
             gamma = float(request.form['gamma'])
-        except ValueError:
+        except Exception:
             return render_template(
                 'hurwicz_file.html',
                 c_error='Parametr gamma musi być typu numerycznego. Podaj wartość ponownie z przedziału [0; 1].'
@@ -216,15 +236,25 @@ def hurwicz_template_manually():
     if request.method == 'POST':
         try:
             gamma = float(request.form['gamma'])
-        except ValueError:
+        except Exception:
             return render_template(
                 'hurwicz_manually.html',
-                c_error='Parametr gamma musi być typu numerycznego. Podaj wartość ponownie z przedziału [0; 1].'
+                c_error='Parametr gamma musi być typu numerycznego. Podaj wartość ponownie z przedziału [0; 1].',
+                rows=rows,
+                columns=columns,
             )
 
         matrix = []
         for i in range(rows):
-            matrix.append([float(request.form.get(f'matrix_{i}_{j}', 0)) for j in range(columns)])
+            try:
+                matrix.append([float(request.form.get(f'matrix_{i}_{j}', 0)) for j in range(columns)])
+            except Exception:
+                return render_template(
+                    'wald_manually.html',
+                    c_error='Błędne wartości macierzy użyteczności.',
+                    rows=rows,
+                    columns=columns,
+                )
         matrix = np.array(matrix)
 
         try:
@@ -232,7 +262,9 @@ def hurwicz_template_manually():
         except Exception as e:
             return render_template(
                 'hurwicz_manually.html',
-                c_error=e
+                c_error=e,
+                rows=rows,
+                columns=columns,
             )
         return render_template(
             'hurwicz_manually.html',
@@ -281,7 +313,15 @@ def savage_template_manually():
     if request.method == 'POST':
         matrix = []
         for i in range(rows):
-            matrix.append([float(request.form.get(f'matrix_{i}_{j}', 0)) for j in range(columns)])
+            try:
+                matrix.append([float(request.form.get(f'matrix_{i}_{j}', 0)) for j in range(columns)])
+            except Exception:
+                return render_template(
+                    'wald_manually.html',
+                    c_error='Błędne wartości macierzy użyteczności.',
+                    rows=rows,
+                    columns=columns,
+                )
         matrix = np.array(matrix)
 
         try:
@@ -289,7 +329,9 @@ def savage_template_manually():
         except Exception as e:
             return render_template(
                 'savage_manually.html',
-                c_error=e
+                c_error=e,
+                rows=rows,
+                columns=columns,
             )
         return render_template(
             'savage_manually.html',
@@ -343,7 +385,15 @@ def bayes_laplace_template_manually():
     if request.method == 'POST':
         matrix = []
         for i in range(rows):
-            matrix.append([float(request.form.get(f'matrix_{i}_{j}', 0)) for j in range(columns)])
+            try:
+                matrix.append([float(request.form.get(f'matrix_{i}_{j}', 0)) for j in range(columns)])
+            except Exception:
+                return render_template(
+                    'wald_manually.html',
+                    c_error='Błędne wartości macierzy użyteczności.',
+                    rows=rows,
+                    columns=columns,
+                )
         matrix = np.array(matrix)
         proba = np.array([float(request.form.get(f'proba_{i}', 0)) for i in range(columns)])
 
@@ -352,7 +402,9 @@ def bayes_laplace_template_manually():
         except Exception as e:
             return render_template(
                 'bayes_laplace_manually.html',
-                c_error=e
+                c_error=e,
+                rows=rows,
+                columns=columns,
             )
         return render_template(
             'bayes_laplace_manually.html',
