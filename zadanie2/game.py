@@ -1,9 +1,9 @@
 import numpy as np
+from scipy.optimize import linprog, OptimizeResult
 
 
 def wald(matrix: np.array) -> int:
     return np.argmax(np.min(matrix, axis=1)) + 1
-
 
 def dominant(matrix: np.array) -> list:
     dominanted = []
@@ -14,29 +14,76 @@ def dominant(matrix: np.array) -> list:
                     dominanted.append(j)
     return list(set(dominanted))
 
-def sum_zero_game(matrix: np.array) -> str:
+def player_a(matrix: np.array) -> OptimizeResult:
+    num_strategies = matrix.shape[0]
+    num_opponent_strategies = matrix.shape[1]
+
+    c = np.zeros(num_strategies + 1)
+    c[-1] = -1
+
+    A_ub = np.hstack((-matrix.T, np.ones((num_opponent_strategies, 1))))
+    b_ub = np.ones(num_opponent_strategies)
+
+    A_eq = np.append(np.ones(num_strategies), 0).reshape(1, -1)
+    b_eq = [1]
+
+    bounds = [(0, None)] * num_strategies + [(None, None)]
+
+    return linprog(c, A_ub=A_ub, b_ub=b_ub, A_eq=A_eq, b_eq=b_eq, bounds=bounds, method='highs')
+
+def player_b(matrix: np.array) -> OptimizeResult:
+    num_strategies = matrix.shape[0]
+    num_opponent_strategies = matrix.shape[1]
+
+    c = np.zeros(num_strategies + 1)
+    c[-1] = 1
+
+    A_ub = np.hstack((matrix.T, -np.ones((num_opponent_strategies, 1))))
+    b_ub = np.ones(num_opponent_strategies)
+
+    A_eq = np.append(np.ones(num_strategies), 0).reshape(1, -1)
+    b_eq = [1]
+
+    bounds = [(0, None)] * num_strategies + [(None, None)]
+
+    return linprog(c, A_ub=A_ub, b_ub=b_ub, A_eq=A_eq, b_eq=b_eq, bounds=bounds, method='highs')
+
+def zero_sum_game(matrix: np.array) -> str:
     a, b = wald(matrix), wald(matrix.T)
     if a == b:
         return f'Wartość gry wynosi {a}. (strategia czysta)'
     elif a == 0:
         return 'Gra jest sprawiedliwa.'
     else:
+        # sprawdzić czy istnieją i jeśli tak, to usunąć, strategie zdominowane
         columns, rows = dominant(matrix.T), dominant(matrix)
         matrix = np.delete(matrix, columns, axis=1)
         matrix = np.delete(matrix, rows, axis=0)
-        return str(matrix)
+
+        # jeżeli w macierzy gry znajdują się wartości ujemne lub zero,
+        # to trzeba całą macierz (wartości) przesunąć w górę o pewną wartość,
+        # Na końcu uzyskany wynik w postaci wartości gry należy pomniejszyć (odjąć) o tę wartość
+        move_up = 0
+        if np.min(matrix) < 0:
+            move_up = np.abs(np.min(matrix.flatten()))
+            matrix += move_up
+
+        res_a = player_a(matrix)
+        res_b = player_b(matrix.T)
+
+        if res_a.success and res_b.success:
+            strategy_a, strategy_b = res_a.x[:-1], res_b.x[:-1]
+            game_value_a = res_a.x[-1] - move_up
+
+            return f"Strategia gracza A: {strategy_a}. Strategia gracza B: {strategy_b}. Wartość gry: {game_value_a}"
+        else:
+            return "Nie znaleziono rozwiązania."
+
 
 task = np.array([
-    [1, 3, 5, 8],
-    [-2, 4, 3, 5],
-    [7, -1, 1, 0]
+    [5, 0, 1],
+    [2, 4, 3]
 ])
 
-# task = np.array([
-#     [2, 1, 3],
-#     [1, 1, 1],
-#     [3, 2, 4],
-#     [1, 5, 0]
-# ])
+print(zero_sum_game(task))
 
-print(sum_zero_game(task))
