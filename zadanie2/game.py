@@ -1,4 +1,6 @@
 import numpy as np
+import pandas as pd
+import os
 from scipy.optimize import linprog, OptimizeResult
 
 
@@ -79,11 +81,21 @@ def zero_sum_game(matrix: np.array) -> str:
         else:
             return "Nie znaleziono rozwiązania."
 
+def main():
+    stop_program = False
+    while not stop_program:
+        print('Wpisz ścieżkę do pliku:')
+        try:
+            path = input()
+            matrix = pd.read_csv(os.path.normpath(path), header=None, sep=None, engine='python').to_numpy()
+            print(zero_sum_game(matrix))
+        except FileNotFoundError:
+            print('Nie znaleziono pliku. Upewnij się, że ścieżka jest poprawna.')
+        except Exception as e:
+            print(e)
+        print('Skończ program: Y/N')
+        p = input()
+        stop_program = True if p in ['Y', 'y'] else False
 
-task = np.array([
-    [5, 0, 1],
-    [2, 4, 3]
-])
 
-print(zero_sum_game(task))
-
+main()
