@@ -4,8 +4,11 @@ import os
 from scipy.optimize import linprog, OptimizeResult
 
 
-def wald(matrix: np.array) -> int:
-    return np.argmax(np.min(matrix, axis=1)) + 1
+def maximin(matrix: np.array) -> int:
+    return np.max(np.min(matrix, axis=1))
+
+def minimax(matrix: np.array) -> int:
+    return np.min(np.max(matrix, axis=0))
 
 def dominant(matrix: np.array) -> list:
     dominanted = []
@@ -23,15 +26,12 @@ def player_a(matrix: np.array) -> OptimizeResult:
     c = np.zeros(num_strategies + 1)
     c[-1] = -1
 
-    A_ub = np.hstack((-matrix.T, np.ones((num_opponent_strategies, 1))))
-    b_ub = np.ones(num_opponent_strategies)
-
-    A_eq = np.append(np.ones(num_strategies), 0).reshape(1, -1)
-    b_eq = [1]
+    a_ub, b_ub = np.hstack((-matrix.T, np.ones((num_opponent_strategies, 1)))), np.ones(num_opponent_strategies)
+    a_eq, b_eq = np.append(np.ones(num_strategies), 0).reshape(1, -1), [1]
 
     bounds = [(0, None)] * num_strategies + [(None, None)]
 
-    return linprog(c, A_ub=A_ub, b_ub=b_ub, A_eq=A_eq, b_eq=b_eq, bounds=bounds, method='highs')
+    return linprog(c, A_ub=a_ub, b_ub=b_ub, A_eq=a_eq, b_eq=b_eq, bounds=bounds, method='highs')
 
 def player_b(matrix: np.array) -> OptimizeResult:
     num_strategies = matrix.shape[0]
@@ -40,22 +40,20 @@ def player_b(matrix: np.array) -> OptimizeResult:
     c = np.zeros(num_strategies + 1)
     c[-1] = 1
 
-    A_ub = np.hstack((matrix.T, -np.ones((num_opponent_strategies, 1))))
-    b_ub = np.ones(num_opponent_strategies)
-
-    A_eq = np.append(np.ones(num_strategies), 0).reshape(1, -1)
-    b_eq = [1]
+    a_ub, b_ub = np.hstack((matrix.T, -np.ones((num_opponent_strategies, 1)))), np.ones(num_opponent_strategies)
+    a_eq, b_eq = np.append(np.ones(num_strategies), 0).reshape(1, -1), [1]
 
     bounds = [(0, None)] * num_strategies + [(None, None)]
 
-    return linprog(c, A_ub=A_ub, b_ub=b_ub, A_eq=A_eq, b_eq=b_eq, bounds=bounds, method='highs')
+    return linprog(c, A_ub=a_ub, b_ub=b_ub, A_eq=a_eq, b_eq=b_eq, bounds=bounds, method='highs')
 
 def zero_sum_game(matrix: np.array) -> str:
-    a, b = wald(matrix), wald(matrix.T)
-    if a == b:
-        return f'Wartość gry wynosi {a}. (strategia czysta)'
-    elif a == 0:
-        return 'Gra jest sprawiedliwa.'
+    va, vb = maximin(matrix), minimax(matrix)
+
+    if va == vb:
+        return f'Gra ma strategię czystą. Wartość gry: {va}'
+    elif va == 0 and vb == 0:
+        return 'Gra jest sprawiedliwa, ale nie ma strategii czystej.'
     else:
         # sprawdzić czy istnieją i jeśli tak, to usunąć, strategie zdominowane
         columns, rows = dominant(matrix.T), dominant(matrix)
