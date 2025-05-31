@@ -2,6 +2,8 @@ import numpy as np
 import pandas as pd
 import os
 from scipy.optimize import linprog, OptimizeResult
+import warnings
+warnings.filterwarnings("ignore")
 
 
 def maximin(matrix: np.array) -> int:
@@ -10,14 +12,26 @@ def maximin(matrix: np.array) -> int:
 def minimax(matrix: np.array) -> int:
     return np.min(np.max(matrix, axis=0))
 
-def dominant(matrix: np.array) -> list:
-    dominanted = []
+def dominant_row(matrix: np.array) -> list:
+    dominated = []
     for i, r1 in enumerate(matrix):
         for j, r2 in enumerate(matrix):
             if i != j:
-                if all(x <= y for x, y in zip(r1, r2)):
-                    dominanted.append(j)
-    return list(set(dominanted))
+                # r1 dominuje r2, jeśli r1 >= r2 elementowo i co najmniej jeden >
+                if all(x >= y for x, y in zip(r1, r2)) and any(x > y for x, y in zip(r1, r2)):
+                    dominated.append(j)
+    return list(set(dominated))
+
+def dominant_column(matrix: np.array) -> list:
+    dominated = []
+    transposed = matrix.T
+    for i, c1 in enumerate(transposed):
+        for j, c2 in enumerate(transposed):
+            if i != j:
+                # c1 dominuje c2, jeśli c1 <= c2 elementowo i co najmniej jeden <
+                if all(x <= y for x, y in zip(c1, c2)) and any(x < y for x, y in zip(c1, c2)):
+                    dominated.append(j)
+    return list(set(dominated))
 
 def player_a(matrix: np.array) -> OptimizeResult:
     num_strategies = matrix.shape[0]
@@ -31,7 +45,7 @@ def player_a(matrix: np.array) -> OptimizeResult:
 
     bounds = [(0, None)] * num_strategies + [(None, None)]
 
-    return linprog(c, A_ub=a_ub, b_ub=b_ub, A_eq=a_eq, b_eq=b_eq, bounds=bounds, method='highs')
+    return linprog(c, A_ub=a_ub, b_ub=b_ub, A_eq=a_eq, b_eq=b_eq, bounds=bounds, method='simplex')
 
 def player_b(matrix: np.array) -> OptimizeResult:
     num_strategies = matrix.shape[0]
@@ -45,7 +59,7 @@ def player_b(matrix: np.array) -> OptimizeResult:
 
     bounds = [(0, None)] * num_strategies + [(None, None)]
 
-    return linprog(c, A_ub=a_ub, b_ub=b_ub, A_eq=a_eq, b_eq=b_eq, bounds=bounds, method='highs')
+    return linprog(c, A_ub=a_ub, b_ub=b_ub, A_eq=a_eq, b_eq=b_eq, bounds=bounds, method='simplex')
 
 def zero_sum_game(matrix: np.array) -> str:
     va, vb = maximin(matrix), minimax(matrix)
@@ -56,7 +70,7 @@ def zero_sum_game(matrix: np.array) -> str:
         return 'Gra jest sprawiedliwa, ale nie ma strategii czystej.'
     else:
         # sprawdzić czy istnieją i jeśli tak, to usunąć, strategie zdominowane
-        columns, rows = dominant(matrix.T), dominant(matrix)
+        columns, rows = dominant_column(matrix), dominant_row(matrix)
         matrix = np.delete(matrix, columns, axis=1)
         matrix = np.delete(matrix, rows, axis=0)
 
@@ -69,7 +83,7 @@ def zero_sum_game(matrix: np.array) -> str:
             matrix += move_up
 
         res_a = player_a(matrix)
-        res_b = player_b(matrix.T)
+        res_b = player_b(matrix)
 
         if res_a.success and res_b.success:
             strategy_a, strategy_b = res_a.x[:-1], res_b.x[:-1]
@@ -78,6 +92,7 @@ def zero_sum_game(matrix: np.array) -> str:
             return f"Strategia gracza A: {strategy_a}. Strategia gracza B: {strategy_b}. Wartość gry: {game_value_a}"
         else:
             return "Nie znaleziono rozwiązania."
+
 
 def main():
     stop_program = False
