@@ -80,9 +80,34 @@ def edmonds_karp(c: np.array, source: int, target: int):
         print(f'Flow: {flow}')
         itr += 1
 
+    print('-' * 100)
     return max_flow
 
 
-capacities = load_data('pliki/test')
-print(f'max flow = {edmonds_karp(capacities, 0, 5)}')
+def main():
+    stop_program = False
+    while not stop_program:
+        print('Wpisz ścieżkę do pliku:')
+        try:
+            path = input()
+            capacities = load_data(path)
+            print(f'Podaj wierzchołek startowy {[el for el in range(capacities.shape[0])]}:')
+            src = int(input())
+            print(f'Podaj wierzchołek końcowy {[el for el in range(capacities.shape[0])]}:')
+            tg = int(input())
+            if src < 0 or tg < 0:
+                raise ValueError(f'Wierzchołki muszą być w przedziale {[el for el in range(capacities.shape[0])]}')
+            print(f'Max Flow = {edmonds_karp(capacities, src, tg)}')
+        except FileNotFoundError:
+            print('Nie znaleziono pliku. Upewnij się, że ścieżka jest poprawna.')
+        except ValueError as e:
+            print(e)
+        except Exception as e:
+            print(e)
 
+        print('Skończ program: Y/N')
+        p = input()
+        stop_program = True if p in ['Y', 'y'] else False
+
+
+main()
