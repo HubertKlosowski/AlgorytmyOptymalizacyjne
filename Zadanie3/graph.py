@@ -66,18 +66,15 @@ def edmonds_karp(c: np.array, source: int, target: int):
         if not path:
             break
 
-        print('-' * 100)
-        print(f'Iteracja: {itr}')
-        print(f'path: {path}')
-
         flow = min(c[u][v] for u, v in zip(path, path[1:]))
         for u, v in zip(path, path[1:]):
             c[u][v] -= flow
             c[v][u] += flow
 
         max_flow += flow
-
-        print(f'Flow: {flow}')
+        print('-' * 100)
+        print(f'Iteracja: {itr}')
+        print(f'Ścieżka: {path}, Przepływ: {flow}')
         itr += 1
 
     print('-' * 100)
