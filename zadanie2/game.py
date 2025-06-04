@@ -43,12 +43,6 @@ def player_a(matrix: np.array) -> OptimizeResult:
     a_ub, b_ub = np.hstack((-matrix.T, np.ones((num_opponent_strategies, 1)))), np.zeros(num_opponent_strategies)
     a_eq, b_eq = np.append(np.ones(num_strategies), 0).reshape(1, -1), [1]
 
-    print(c)
-    print(a_ub)
-    print(b_ub)
-    print(a_eq)
-    print(b_eq)
-
     bounds = [(0, np.inf)] * num_strategies + [(-np.inf, np.inf)]
 
     return linprog(c, A_ub=a_ub, b_ub=b_ub, A_eq=a_eq, b_eq=b_eq, bounds=bounds, method='simplex')
@@ -62,12 +56,6 @@ def player_b(matrix: np.array) -> OptimizeResult:
 
     a_ub, b_ub = np.hstack((matrix, -np.ones((num_strategies, 1)))), np.zeros(num_strategies)
     a_eq, b_eq = np.append(np.ones(num_opponent_strategies), 0).reshape(1, -1), [1]
-
-    print(c)
-    print(a_ub)
-    print(b_ub)
-    print(a_eq)
-    print(b_eq)
 
     bounds = [(0, np.inf)] * num_opponent_strategies + [(-np.inf, np.inf)]
 
@@ -144,5 +132,3 @@ def main():
 
 
 main()
-# print(player_a(pd.read_csv('pliki/wariant1', header=None, sep=None, engine='python').to_numpy()))
-# print(player_b(pd.read_csv('pliki/wariant1', header=None, sep=None, engine='python').to_numpy()))
