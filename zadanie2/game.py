@@ -40,8 +40,14 @@ def player_a(matrix: np.array) -> OptimizeResult:
     c = np.zeros(num_strategies + 1)
     c[-1] = -1
 
-    a_ub, b_ub = np.hstack((-matrix.T, np.ones((num_opponent_strategies, 1)))), np.ones(num_opponent_strategies)
+    a_ub, b_ub = np.hstack((-matrix.T, np.ones((num_opponent_strategies, 1)))), np.zeros(num_opponent_strategies)
     a_eq, b_eq = np.append(np.ones(num_strategies), 0).reshape(1, -1), [1]
+
+    print(c)
+    print(a_ub)
+    print(b_ub)
+    print(a_eq)
+    print(b_eq)
 
     bounds = [(0, np.inf)] * num_strategies + [(-np.inf, np.inf)]
 
@@ -54,8 +60,14 @@ def player_b(matrix: np.array) -> OptimizeResult:
     c = np.zeros(num_strategies + 1)
     c[-1] = 1
 
-    a_ub, b_ub = np.hstack((matrix.T, -np.ones((num_opponent_strategies, 1)))), np.ones(num_opponent_strategies)
+    a_ub, b_ub = np.hstack((matrix, -np.ones((num_opponent_strategies, 1)))), np.zeros(num_opponent_strategies)
     a_eq, b_eq = np.append(np.ones(num_strategies), 0).reshape(1, -1), [1]
+
+    print(c)
+    print(a_ub)
+    print(b_ub)
+    print(a_eq)
+    print(b_eq)
 
     bounds = [(0, np.inf)] * num_strategies + [(-np.inf, np.inf)]
 
@@ -88,8 +100,8 @@ def zero_sum_game(matrix: np.array) -> str:
         if res_a.success and res_b.success:
             strategy_a, strategy_b = np.round(res_a.x[:-1], 3), np.round(res_b.x[:-1], 3)
 
-            return (f"Strategia gracza A: {strategy_a}. vA: {(res_a.x[-1] - move_up):.3f}\n"
-                    f"Strategia gracza B: {strategy_b}. vB: {(res_b.x[-1] - move_up):.3f}")
+            return (f"Strategia gracza A: {strategy_a}. vA: {res_a.x[-1] - move_up:.3f}\n"
+                    f"Strategia gracza B: {strategy_b}. vB: {res_b.x[-1] - move_up:.3f}")
         else:
             return "Nie znaleziono rozwiązania."
 
