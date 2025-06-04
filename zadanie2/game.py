@@ -43,7 +43,7 @@ def player_a(matrix: np.array) -> OptimizeResult:
     a_ub, b_ub = np.hstack((-matrix.T, np.ones((num_opponent_strategies, 1)))), np.ones(num_opponent_strategies)
     a_eq, b_eq = np.append(np.ones(num_strategies), 0).reshape(1, -1), [1]
 
-    bounds = [(0, None)] * num_strategies + [(None, None)]
+    bounds = [(0, np.inf)] * num_strategies + [(-np.inf, np.inf)]
 
     return linprog(c, A_ub=a_ub, b_ub=b_ub, A_eq=a_eq, b_eq=b_eq, bounds=bounds, method='simplex')
 
@@ -57,7 +57,7 @@ def player_b(matrix: np.array) -> OptimizeResult:
     a_ub, b_ub = np.hstack((matrix.T, -np.ones((num_opponent_strategies, 1)))), np.ones(num_opponent_strategies)
     a_eq, b_eq = np.append(np.ones(num_strategies), 0).reshape(1, -1), [1]
 
-    bounds = [(0, None)] * num_strategies + [(None, None)]
+    bounds = [(0, np.inf)] * num_strategies + [(-np.inf, np.inf)]
 
     return linprog(c, A_ub=a_ub, b_ub=b_ub, A_eq=a_eq, b_eq=b_eq, bounds=bounds, method='simplex')
 
@@ -65,9 +65,9 @@ def zero_sum_game(matrix: np.array) -> str:
     va, vb = maximin(matrix), minimax(matrix)
 
     if va == vb:
-        return f'Gra ma strategię czystą. Wartość gry: {va}'
+        return f'Gra ma rozwiązanie w strategii czystej (punkt siodłowy). Wartość gry: {va}.'
     elif va == 0 and vb == 0:
-        return 'Gra jest sprawiedliwa, ale nie ma strategii czystej.'
+        return 'Gra jest sprawiedliwa (wartość gry = 0), ale nie posiada rozwiązania w strategii czystej.'
     else:
         # sprawdzić czy istnieją i jeśli tak, to usunąć, strategie zdominowane
         columns, rows = dominant_column(matrix), dominant_row(matrix)
@@ -86,10 +86,10 @@ def zero_sum_game(matrix: np.array) -> str:
         res_b = player_b(matrix)
 
         if res_a.success and res_b.success:
-            strategy_a, strategy_b = res_a.x[:-1], res_b.x[:-1]
-            game_value_a = res_a.x[-1] - move_up
+            strategy_a, strategy_b = np.round(res_a.x[:-1], 3), np.round(res_b.x[:-1], 3)
 
-            return f"Strategia gracza A: {strategy_a}. Strategia gracza B: {strategy_b}. Wartość gry: {game_value_a}"
+            return (f"Strategia gracza A: {strategy_a}. vA: {(res_a.x[-1] - move_up):.3f}\n"
+                    f"Strategia gracza B: {strategy_b}. vB: {(res_b.x[-1] - move_up):.3f}")
         else:
             return "Nie znaleziono rozwiązania."
 
@@ -132,3 +132,5 @@ def main():
 
 
 main()
+# print(player_a(pd.read_csv('pliki/wariant1', header=None, sep=None, engine='python').to_numpy()))
+# print(player_b(pd.read_csv('pliki/wariant1', header=None, sep=None, engine='python').to_numpy()))
