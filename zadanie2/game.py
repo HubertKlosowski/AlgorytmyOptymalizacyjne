@@ -3,7 +3,7 @@ import pandas as pd
 import os
 from scipy.optimize import linprog, OptimizeResult
 import warnings
-warnings.filterwarnings("ignore")
+warnings.filterwarnings('ignore')
 
 
 def maximin(matrix: np.array) -> int:
@@ -78,7 +78,7 @@ def zero_sum_game(matrix: np.array) -> str:
         # to trzeba całą macierz (wartości) przesunąć w górę o pewną wartość,
         # Na końcu uzyskany wynik w postaci wartości gry należy pomniejszyć (odjąć) o tę wartość
         move_up = 0
-        if np.min(matrix) < 0:
+        if np.min(matrix) <= 0:
             move_up = np.abs(np.min(matrix.flatten()))
             matrix += move_up
 
@@ -97,17 +97,37 @@ def zero_sum_game(matrix: np.array) -> str:
 def main():
     stop_program = False
     while not stop_program:
-        print('Wpisz ścieżkę do pliku:')
-        try:
-            path = input()
-            matrix = pd.read_csv(os.path.normpath(path), header=None, sep=None, engine='python').to_numpy()
-            print(zero_sum_game(matrix))
-        except FileNotFoundError:
-            print('Nie znaleziono pliku. Upewnij się, że ścieżka jest poprawna.')
-        except Exception as e:
-            print(e)
-        print('Skończ program: Y/N')
-        p = input()
+        choose = input('Wybierz sposób wprowadzenia macierzy wypłat\n --> (P) plik, \n --> (K) konsola.\n')
+        if choose == 'P':
+            try:
+                path = input('Wpisz ścieżkę do pliku: ')
+                matrix = pd.read_csv(os.path.normpath(path), header=None, sep=None, engine='python').to_numpy()
+                print(f' --> Wynik: \n{zero_sum_game(matrix)}')
+            except FileNotFoundError:
+                print('Nie znaleziono pliku. Upewnij się, że ścieżka jest poprawna.')
+            except Exception as e:
+                print(e)
+        elif choose == 'K':
+            try:
+                row, col = int(input('Podaj liczbę wierszy: ')), int(input('Podaj liczbę kolumn: '))
+                if row < 0 or col < 0:
+                    raise ValueError('Liczba wierszy i kolumny musi być liczbą całkowitą większą od zera!')
+
+                matrix = np.zeros(shape=(row, col))
+                for i in range(row):
+                    for j in range(col):
+                        tmp = float(input(f'Komórka: ({i}, {j}): '))
+                        if not isinstance(tmp, float):
+                            raise ValueError('Wartość macierzy musi być liczbą!')
+                        matrix[i][j] = tmp
+                print(f' --> Wynik: \n{zero_sum_game(matrix)}')
+            except ValueError as e:
+                print(e)
+            except Exception as e:
+                print(e)
+        else:
+            print('Niepoprawna opcja!')
+        p = input('Skończ program: Y/N?\n')
         stop_program = True if p in ['Y', 'y'] else False
 
 
