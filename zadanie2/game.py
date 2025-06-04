@@ -109,24 +109,24 @@ def main():
                 print(e)
         elif choose == 'K':
             try:
-                row, col = int(input('Podaj liczbę wierszy: ')), int(input('Podaj liczbę kolumn: '))
-                if row < 0 or col < 0:
-                    raise ValueError('Liczba wierszy i kolumny musi być liczbą całkowitą większą od zera!')
+                row = int(input('Podaj liczbę wierszy: '))
+                col = int(input('Podaj liczbę kolumn: '))
+                if row <= 0 or col <= 0:
+                    raise ValueError('Liczba wierszy i kolumn musi być większa od zera!')
 
                 matrix = np.zeros(shape=(row, col))
                 for i in range(row):
                     for j in range(col):
-                        tmp = float(input(f'Komórka: ({i}, {j}): '))
-                        if not isinstance(tmp, float):
-                            raise ValueError('Wartość macierzy musi być liczbą!')
-                        matrix[i][j] = tmp
+                        matrix[i][j] = float(input(f'Komórka ({i}, {j}): '))
+
                 print(f' --> Wynik: \n{zero_sum_game(matrix)}')
             except ValueError as e:
-                print(e)
+                print(f"Błąd wartości: {e}")
             except Exception as e:
-                print(e)
+                print(f"Inny błąd: {e}")
         else:
             print('Niepoprawna opcja!')
+
         p = input('Skończ program: Y/N?\n')
         stop_program = True if p in ['Y', 'y'] else False
 

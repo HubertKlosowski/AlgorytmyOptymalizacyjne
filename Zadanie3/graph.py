@@ -84,23 +84,36 @@ def edmonds_karp(c: np.array, source: int, target: int):
 def main():
     stop_program = False
     while not stop_program:
-        print('Wpisz ścieżkę do pliku:')
-        try:
-            path = input()
-            capacities = load_data(path)
-            print(f'Podaj wierzchołek startowy {[el for el in range(capacities.shape[0])]}:')
-            src = int(input())
-            print(f'Podaj wierzchołek końcowy {[el for el in range(capacities.shape[0])]}:')
-            tg = int(input())
-            if src < 0 or tg < 0:
-                raise ValueError(f'Wierzchołki muszą być w przedziale {[el for el in range(capacities.shape[0])]}')
-            print(f'Max Flow = {edmonds_karp(capacities, src, tg)}')
-        except FileNotFoundError:
-            print('Nie znaleziono pliku. Upewnij się, że ścieżka jest poprawna.')
-        except ValueError as e:
-            print(e)
-        except Exception as e:
-            print(e)
+        choose = input('Wybierz sposób wprowadzenia macierzy wypłat\n --> (P) plik, \n --> (K) konsola.\n')
+        capacities = []
+        if choose == 'P' or choose == 'K':
+            if choose == 'P':
+                try:
+                    path = input('Wpisz ścieżkę do pliku: ')
+                    capacities = load_data(path)
+                except FileNotFoundError:
+                    print('Nie znaleziono pliku. Upewnij się, że ścieżka jest poprawna.')
+            elif choose == 'K':
+                points = int(input('Podaj liczbę wierzchołków: '))
+                if points <= 0:
+                    raise ValueError('Liczba wierzchołków musi być większa od zera!')
+
+                capacities = np.zeros(shape=(points, points))
+                for i in range(points):
+                    for j in range(points):
+                        if i != j:
+                            capacities[i][j] = float(input(f'Połączenie między {i}, a {j}: '))
+
+            try:
+                src = int(input(f'Podaj wierzchołek startowy {[el for el in range(capacities.shape[0])]}: '))
+                tg = int(input(f'Podaj wierzchołek końcowy {[el for el in range(capacities.shape[0])]}: '))
+                if src < 0 or tg < 0:
+                    raise ValueError(f'Wierzchołki muszą być w przedziale {[el for el in range(capacities.shape[0])]}')
+                print(f' --> Maksymalny przepływ w sieci = {edmonds_karp(capacities, src, tg)}')
+            except ValueError as e:
+                print(e)
+        else:
+            print('Niepoprawna opcja!')
 
         print('Skończ program: Y/N')
         p = input()
