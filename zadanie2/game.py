@@ -57,11 +57,11 @@ def player_b(matrix: np.array) -> OptimizeResult:
     num_strategies = matrix.shape[0]
     num_opponent_strategies = matrix.shape[1]
 
-    c = np.zeros(num_strategies + 1)
+    c = np.zeros(num_opponent_strategies + 1)
     c[-1] = 1
 
-    a_ub, b_ub = np.hstack((matrix, -np.ones((num_opponent_strategies, 1)))), np.zeros(num_opponent_strategies)
-    a_eq, b_eq = np.append(np.ones(num_strategies), 0).reshape(1, -1), [1]
+    a_ub, b_ub = np.hstack((matrix, -np.ones((num_strategies, 1)))), np.zeros(num_strategies)
+    a_eq, b_eq = np.append(np.ones(num_opponent_strategies), 0).reshape(1, -1), [1]
 
     print(c)
     print(a_ub)
@@ -69,7 +69,7 @@ def player_b(matrix: np.array) -> OptimizeResult:
     print(a_eq)
     print(b_eq)
 
-    bounds = [(0, np.inf)] * num_strategies + [(-np.inf, np.inf)]
+    bounds = [(0, np.inf)] * num_opponent_strategies + [(-np.inf, np.inf)]
 
     return linprog(c, A_ub=a_ub, b_ub=b_ub, A_eq=a_eq, b_eq=b_eq, bounds=bounds, method='simplex')
 
