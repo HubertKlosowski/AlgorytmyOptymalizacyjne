@@ -6,11 +6,13 @@ import warnings
 warnings.filterwarnings('ignore')
 
 
-def maximin(matrix: np.array) -> int:
-    return np.max(np.min(matrix, axis=1))
+def maximin(matrix: np.array) -> tuple:
+    maximini = np.max(np.min(matrix, axis=1))
+    return maximini, np.argmax(np.min(matrix, axis=1))
 
-def minimax(matrix: np.array) -> int:
-    return np.min(np.max(matrix, axis=0))
+def minimax(matrix: np.array) -> tuple:
+    minimaxi = np.min(np.max(matrix, axis=0))
+    return minimaxi, np.argmin(np.max(matrix, axis=0))
 
 def dominant_row(matrix: np.array) -> list:
     dominated = []
@@ -62,10 +64,13 @@ def player_b(matrix: np.array) -> OptimizeResult:
     return linprog(c, A_ub=a_ub, b_ub=b_ub, A_eq=a_eq, b_eq=b_eq, bounds=bounds, method='simplex')
 
 def zero_sum_game(matrix: np.array) -> str:
-    va, vb = maximin(matrix), minimax(matrix)
+    va, sa = maximin(matrix)
+    vb, sb = minimax(matrix)
 
     if va == vb:
-        return f'Gra ma rozwiązanie w strategii czystej (punkt siodłowy). Wartość gry: {va}.'
+        return (f'Gra ma rozwiązanie w strategii czystej (punkt siodłowy).\n'
+                f'Strategia gracza A: {sa}. Wartość gry A: {va}.\n'
+                f'Strategia gracza B: {sb}. Wartość gry B: {vb}.')
     elif va == 0 and vb == 0:
         return 'Gra jest sprawiedliwa (wartość gry = 0), ale nie posiada rozwiązania w strategii czystej.'
     else:
